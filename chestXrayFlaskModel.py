@@ -6,17 +6,18 @@ from PIL import Image
 
 app = Flask("Chest X-ray Analysis")
 
-# Google Drive file ID (replace this with your actual file ID)
+# Google Drive file ID
 FILE_ID = '12i7ODJjsJblhbyiEFtCiUP0Ep705gBr8'
 
-# URL for the Google Drive file
-url = f'https://drive.google.com/file/d/12i7ODJjsJblhbyiEFtCiUP0Ep705gBr8/view?usp=share_link'
+# Correct URL for the Google Drive file
+url = f'https://drive.google.com/uc?id={FILE_ID}'
 
 # Local path where the model will be saved
 model_path = 'xray_tf_model.h5'
 
-# Download the model from Google Drive
-gdown.download(url, model_path, quiet=False)
+# Download the model from Google Drive if it doesn't exist
+if not os.path.exists(model_path):
+    gdown.download(url, model_path, quiet=False)
 
 # Load the model
 model = load_model(model_path)
