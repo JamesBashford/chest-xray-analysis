@@ -3,6 +3,7 @@ import gdown
 from tensorflow.keras.models import load_model
 import numpy as np
 from PIL import Image
+import os  # Import the os module
 
 app = Flask("Chest X-ray Analysis")
 
