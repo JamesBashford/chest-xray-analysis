@@ -1,14 +1,27 @@
 from flask import Flask, request, jsonify
-import tensorflow as tf
-from PIL import Image
+import gdown
+from tensorflow.keras.models import load_model
 import numpy as np
+from PIL import Image
 
 app = Flask("Chest X-ray Analysis")
 
-# Load the model
-model = tf.keras.models.load_model('/Users/jamesbashford/Downloads/xray_tf_model-2.h5')
+# Google Drive file ID (replace this with your actual file ID)
+FILE_ID = '12i7ODJjsJblhbyiEFtCiUP0Ep705gBr8'
 
-# Pathologies list
+# URL for the Google Drive file
+url = f'https://drive.google.com/file/d/12i7ODJjsJblhbyiEFtCiUP0Ep705gBr8/view?usp=share_link'
+
+# Local path where the model will be saved
+model_path = 'xray_tf_model.h5'
+
+# Download the model from Google Drive
+gdown.download(url, model_path, quiet=False)
+
+# Load the model
+model = load_model(model_path)
+
+# Pathologies list (update with your actual list)
 pathologies = [
     'No Finding',
     'Infiltration',
@@ -48,4 +61,3 @@ def predict():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
-
