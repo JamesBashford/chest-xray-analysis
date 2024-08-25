@@ -3,7 +3,7 @@ import gdown
 from tensorflow.keras.models import load_model
 import numpy as np
 from PIL import Image
-import os  # Import the os module
+import os
 
 app = Flask("Chest X-ray Analysis")
 
@@ -23,7 +23,7 @@ if not os.path.exists(model_path):
 # Load the model
 model = load_model(model_path)
 
-# Pathologies list (update with your actual list)
+# Pathologies list
 pathologies = [
     'No Finding',
     'Infiltration',
@@ -53,13 +53,22 @@ def preprocess_image(image):
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    file = request.files['file']
-    img_array = preprocess_image(file)
-    predictions = model.predict(img_array)
-    sorted_indices = np.argsort(predictions[0])[::-1]
-    sorted_pathologies = [(pathologies[i], predictions[0][i]) for i in sorted_indices]
+    try:
+        file = request.files['file']
+        img_array = preprocess_image(file)
+        predictions = model.predict(img_array)
+        sorted_indices = np.argsort(predictions[0])[::-1]
+        sorted_pathologies = [(pathologies[i], float(predictions[0][i])) for i in sorted_indices]  # Convert to float
 
-    return jsonify(sorted_pathologies)
+        return jsonify(sorted_pathologies)
+    except Exception as e:
+        print(f"Error occurred: {e}")
+        return jsonify({"error": str(e)}), 500
+
+# Optional: Add a route for the root URL
+@app.route('/')
+def index():
+    return "Welcome to the Chest X-ray Analysis API. Use the /predict endpoint to analyze images."
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
